@@ -31,7 +31,7 @@ void setup() {
   // a method in ExampleLSystemDesigns
   // [TODO]: call your L-system designs methods below
   // to create your l-system
-  lSys = design1();
+  lSys = design3();
   
   // Don't loop the draw function
   noLoop();
