@@ -46,7 +46,7 @@ filament_diameter = 1.75
 #     [(105,129.24,7.3), (105,141.36,0.3)], #horizontal
 # ]
 
-lines = generate_lines.generate_lines_small()
+lines = generate_lines.generate_lines_general(x_length=24, y_length=16, layers=3)
 
 # GCODE COMMANDS
 COMMAND_MOVE = "G1"
@@ -104,7 +104,7 @@ def is_same_pt(ptA, ptB):
 ########################################################################
 # creates a string consisting of a G1 move command and 
 # any associated parameters
-def gcode_move(current_pos, next_pos, feed_rate=None, should_extrude=False):
+def gcode_move(current_pos, next_pos, feed_rate=None, should_extrude=False, extrusion_multiplier=1.1):
     # Start with "G1" as command
     move_command_str = COMMAND_MOVE
     
@@ -138,7 +138,7 @@ def gcode_move(current_pos, next_pos, feed_rate=None, should_extrude=False):
         # V_out = (layer_height * (extrusion_width - layer_height) + math.pi * (layer_height/2) ** 2) * distance
         # A_in = math.pi * (filament_diameter/2) ** 2
         # extrusion = V_out / A_in
-        e_value = float_to_string(calculate_extrusion(current_pos, next_pos), precision=E_VALUE_PRECISION)
+        e_value = float_to_string(calculate_extrusion(current_pos, next_pos)*extrusion_multiplier, precision=E_VALUE_PRECISION)
         move_command_str += " " + PARAM_E + e_value
     
     
@@ -234,9 +234,9 @@ def generate_gcode():
         all_move_commands.append(move_and_extrude_command)
 
         if are_floats_equal(line_start_position[0], line_end_position[0]) and are_floats_equal(line_start_position[1], line_end_position[1]):
-            all_move_commands.append('G10')
-            all_move_commands.append('G04 P1000')
-            all_move_commands.append('G11')
+            all_move_commands.append('G1 E-0.1')
+            all_move_commands.append('G04 P1500')
+            all_move_commands.append('G1 E0.1')
         
         # [TODO]: Update the current position of our extruder to be at the end of the line
         current_position = line_end_position
@@ -247,6 +247,8 @@ def generate_gcode():
     # [TODO]: Once you have all of the move commands stored as a list in
     # `all_move_commands`, combine the `start_gcode`, `all_move_commands`, and `end_gcode`
     # into one list called `gcode_lines`   
+    all_move_commands.append('G10')
+    all_move_commands.append('G04 P1000')
     gcode_lines = base.start_gcode_lines + all_move_commands + base.end_gcode_lines
 
     # --- DO NOT EDIT BELOW ----

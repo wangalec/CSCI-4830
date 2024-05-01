@@ -1,3 +1,5 @@
+extruder_temp = 210
+
 start_gcode_lines = [";START GCODE",
     "M201 X1000 Y1000 Z200 E5000 ; sets maximum accelerations, mm/sec^2",
     "M203 X200 Y200 Z12 E120 ; sets maximum feedrates, mm / sec",
@@ -10,10 +12,10 @@ start_gcode_lines = [";START GCODE",
     "M115 U3.13.3 ; tell printer latest fw version",
     "G90 ; use absolute coordinates",
     "M83 ; extruder relative mode",
-    "M104 S215 ; set extruder temp",
+    "M104 S" + str(extruder_temp) + " ; set extruder temp",
     "M140 S60 ; set bed temp",
     "M190 S60 ; wait for bed temp",
-    "M109 S215 ; wait for extruder temp",
+    "M109 S" + str(extruder_temp) + " ; wait for extruder temp",
     "G28 W ; home all without mesh bed level",
     "G80 X86.6877 Y64.7708 W85.2412 H59.1573 ; mesh bed levelling",
     "G1 Z0.2 F720",
